@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.forms import UserCreationForm
 
 
 def index(request):
@@ -11,7 +12,11 @@ def room(request, room_name):
     })
 
 def register(request):
-    return render(request, 'register.html', {})
+    form = UserCreationForm()
+    context = {'form:': form}
+    return render(request, 'register.html', context)
 
 def login(request):
-    return render(request, 'login.html', {})
+    form = UserCreationForm
+    context = {"form": form}
+    return render(request, 'login.html', context)
