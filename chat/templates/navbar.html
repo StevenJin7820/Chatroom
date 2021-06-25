@@ -1,6 +1,14 @@
 
 {% load static %}
 
+<style>
+  .hello-msg{
+    font-size : 18px;
+    color: #fff;
+    margin-right: 20px;
+  }
+</style>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <img src="{% static 'images/chatroom.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
     <a class="navbar-brand" href="#">Chatroom</a>
@@ -12,7 +20,10 @@
         <a class="nav-item nav-link active" href="#">Home</a>
         <a class="nav-item nav-link" href="#">Room List</a>
         <a class="nav-item nav-link" href="#">Friends</a>
-        <a class="nav-item nav-link" href="#">Logout</a>
       </div>
     </div>
+
+    <span class = "hello-msg">Hello, {{request.user}} </span>
+    <span class = "hello-msg"><a href = "{% url 'logout' %}">Logout</a></span>
+
   </nav>
