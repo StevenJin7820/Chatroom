@@ -1,5 +1,43 @@
 {% extends 'dashboard.html' %}
 
 {% block content %}
-<h3>Home Page</h3>
+<br>
+
+<div class="row">
+	<div class="col-md-5">
+		<h5>Open Rooms:</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="">Create Room</a>
+			<table class="table table-sm">
+				<tr>
+					<th>Rooms</th>
+					<th>Users</th>
+				</tr>
+
+				{% for i in rooms %}
+					<tr>
+						<td>{{i.room_name}}</td>
+					</tr>
+				{% endfor %}
+
+			</table>
+		</div>
+	</div>
+
+
+    <div class="col-md-7">
+		<h5>Friends</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="">Add Friend</a>
+			<table class="table table-sm">
+				<tr>
+					<th>Friends</th>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+
 {% endblock %}

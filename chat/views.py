@@ -47,7 +47,8 @@ def logoutUser(request):
 
 @login_required(login_url='index')
 def home(request):
-    return render(request, 'home.html', {})
+    rooms = Room.objects.all()
+    return render(request, 'home.html', {'rooms': rooms})
 
 @login_required(login_url='index')
 def room(request, room_name):
