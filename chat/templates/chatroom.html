@@ -23,7 +23,7 @@
                 <form>
                     <div class="form-group">
                         <label for="exampleFormControlTextarea1" class="h4 pt-5">Chatroom</label>
-                        <textarea class="form-control" id="chat-text" rows="10"></textarea><br>
+                        <textarea class="form-control" id="chat-text" rows="10" readonly = "readonly"></textarea><br>
                     </div>
                     <div class="form-group">
                         <input class="form-control" id="input" type="text"></br>
@@ -64,7 +64,11 @@
         chatSocket.onmessage = function (e) {
             const data = JSON.parse(e.data);
             console.log(data)
-            document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
+            let currentDate = new Date();
+            let hours = currentDate.getHours();
+            hours = (hours % 12) || 12;
+            let time = hours + ":" + currentDate.getMinutes();
+            document.querySelector('#chat-text').value += (data.username + ': ' + data.message + " " + time  + '\n')
         }
     </script>
 
