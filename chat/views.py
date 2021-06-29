@@ -5,6 +5,7 @@ from .forms import CreateUserForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from .forms import CreateRoomForm
 
 def register(request):
     if request.user.is_authenticated:
@@ -55,3 +56,24 @@ def room(request, room_name):
     return render(request, 'chatroom.html', {
         'room_name': room_name
     })
+
+@login_required(login_url='index')
+def create_room(request):
+    form = CreateRoomForm()
+    if request.method == 'POST':
+        form = CreateRoomForm(request.POST)
+        if form.is_valid():
+            form.save()
+            room_name = form.cleaned_data.get('room_name')
+            return redirect('chatrooms/'+room_name)
+
+    context = {'form':form}
+    return render(request, 'room_form.html', context)
+
+@login_required(login_url='index')
+def join_room(request):
+    if request.method == 'POST':
+        room_name = request.POST.get('Room')
+        return redirect('chatrooms/'+room_name)
+
+    return render(request, 'room_join.html')

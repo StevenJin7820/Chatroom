@@ -2,22 +2,29 @@
 
 {% block content %}
 <br>
-
+<head>
+	<style>
+		.row{
+			margin : auto;
+		}
+	</style>
+</head>
 <div class="row">
 	<div class="col-md-5">
-		<h5>Open Rooms:</h5>
+		<h4>Open Rooms:</h4>
 		<hr>
 		<div class="card card-body">
-			<a class="btn btn-primary  btn-sm btn-block" href="">Create Room</a>
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'create_room' %}">Create Room</a>
 			<table class="table table-sm">
 				<tr>
 					<th>Rooms</th>
-					<th>Users</th>
+					<th>Join</th>
 				</tr>
 
 				{% for i in rooms %}
 					<tr>
 						<td>{{i.room_name}}</td>
+						<td><a href = "{% url 'room' i.room_name %}">Join</a></td>
 					</tr>
 				{% endfor %}
 
@@ -25,19 +32,27 @@
 		</div>
 	</div>
 
-
-    <div class="col-md-7">
+	<div class="col-md-7">
 		<h5>Friends</h5>
 		<hr>
 		<div class="card card-body">
-			<a class="btn btn-primary  btn-sm btn-block" href="">Add Friend</a>
+			
 			<table class="table table-sm">
 				<tr>
-					<th>Friends</th>
+					<th>Friend</th>
+					<th>Status</th>
+					<th>Join</th>
 				</tr>
+					<tr>
+						<td>Billy Bob</td>
+						<td>Online</td>
+						<td><a href="">Join</a></td>
+					</tr>
 			</table>
 		</div>
 	</div>
+
+
 
 
 {% endblock %}
