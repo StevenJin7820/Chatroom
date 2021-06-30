@@ -1,5 +1,5 @@
 {% extends 'dashboard.html' %}
-
+{% load static %}
 {% block content %}
 <html lang="en">
 
@@ -11,11 +11,32 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        .row{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+		}
+    </style>
 
     <title>Chatroom</title>
 </head>
 
 <body>
+
+    <div class="container">
+        <div class="row d-flex justify-content-center">
+            <div class="col-6">
+                <div id = "video-container">
+                    <video id = "video-chat" autoplay playsinline></video>
+                    <div class = "row">
+                        <button id ="btn-toggle-audio">Mute</button>
+                        <button id ="btn-toggle-video">Video</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="container">
         <div class="row d-flex justify-content-center">
@@ -68,6 +89,8 @@
             document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
         }
     </script>
+
+    <script type = "text/JavaScript" src = "{% static 'js/main.js'%}"></script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
