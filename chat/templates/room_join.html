@@ -4,7 +4,27 @@
 
 <head>
     <style>
-        
+        body,
+		html {
+			width: 100%;
+            height: 100vh;
+            color: #fff;
+            background: linear-gradient(45deg, #FFADAD, #FFD6A5, #FDFFB6, #CAFFBF, #9BF6FF,#A0C4FF,#BDB2FF,#FFC6FF,#FFFFFC  );
+            background-size: 400% 400%;
+            position: relative;
+            animation: change 10s ease-in-out alternate infinite;
+		}
+        @keyframes change {
+            0%{
+                background-position: 0 50%;
+            }
+            50%{
+                background-position: 100% 50%;
+            }
+            100%{
+                background-position: 0 50%;
+            }
+        }  
     </style>
 </head>
 <form method = "POST" action = "">
