@@ -29,11 +29,13 @@
             <div class="col-6">
                 <div id = "video-container">
                     <video id = "video-chat" autoplay playsinline></video>
-                    <div class = "row">
-                        <button id ="btn-toggle-audio">Mute</button>
-                        <button id ="btn-toggle-video">Video</button>
-                    </div>
                 </div>
+                    <div class = "row">
+                        <button id ="mute">Mute</button>
+                        <button id ="unmute">Unmute</button>
+                        <button id ="video-on">Video On</button>
+                        <button id ="video-off">Video Off</button>
+                    </div>
             </div>
         </div>
     </div>
@@ -57,40 +59,8 @@
 
     {{ request.user.username|json_script:"user_username" }}
     {{ room_name|json_script:"room-name" }}
-    <script>
-        const user_username = JSON.parse(document.getElementById('user_username').textContent);
-        document.querySelector('#submit').onclick = function (e) {
-            const messageInputDom = document.querySelector('#input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message,
-                'username': user_username,
-            }));
-            messageInputDom.value = '';
-        };
 
-        const roomName = JSON.parse(document.getElementById('room-name').textContent);
-
-        const chatSocket = new WebSocket(
-            'ws://' +
-            window.location.host +
-            '/ws/chat/' +
-            roomName +
-            '/'
-        );
-
-        chatSocket.onmessage = function (e) {
-            const data = JSON.parse(e.data);
-            console.log(data)
-            let currentDate = new Date();
-            let hours = currentDate.getHours();
-            hours = (hours % 12) || 12;
-            let time = hours + ":" + currentDate.getMinutes();
-            document.querySelector('#chat-text').value += (data.username + ': ' + data.message + '\n')
-        }
-    </script>
-
-    <script type = "text/JavaScript" src = "{% static 'js/main.js'%}"></script>
+    <script type = "text/JavaScript" src = "{% static 'js/chat-video.js'%}"></script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
