@@ -126,6 +126,7 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
 }
+
 MEDIA_URL = '/images/'
 
 STATICFILES_DIR = [
