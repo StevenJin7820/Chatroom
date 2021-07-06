@@ -1,26 +1,24 @@
 const user_username = JSON.parse(document.getElementById('user_username').textContent);
-
-var mapPeers = {}
-
 const roomName = JSON.parse(document.getElementById('room-name').textContent);
 
-const chatSocket = new WebSocket(
-    'ws://' +
-    window.location.host +
-    '/ws/chat/' +
-    roomName +
-    '/'
-);
 
-chatSocket.addEventListener('open', (e)=> {
-    console.log('Connection Established');
-    sendSignal('new-peer', {});
-})
+var mapPeers = {};
+
+var loc = window.location;
+var wsStart = 'ws://';
+
+if(loc.protocol == 'https:' ){
+    wsStart = 'wss://';
+}
+
+var endPoint = wsStart + loc.host + loc.pathname;
+
+const chatSocket = new WebSocket(endPoint);
 
 function chatSocketOnMessage(event){
     var parsedData = JSON.parse(event.data);
-    var username = parsedData['username']
-    var action = parsedData['action']
+    var username = parsedData['username'];
+    var action = parsedData['action'];
 
     if(username == user_username){
         return;
@@ -30,7 +28,7 @@ function chatSocketOnMessage(event){
 
     if(action == 'new-peer'){
         createOfferer(username, receiver_channel_name);
-        return
+        return;
     }
 
     if(action == 'new-offer'){
@@ -49,6 +47,20 @@ function chatSocketOnMessage(event){
     }
 }
 
+chatSocket.addEventListener('open', (e)=> {
+    console.log('Connection Established');
+    sendSignal('new-peer', {});
+});
+
+chatSocket.addEventListener('error', (e)=>{
+    console.log('Error Occurred!');
+});
+
+chatSocket.addEventListener('close', (e) =>{
+    console.log('Connection Closed');
+});
+
+chatSocket.addEventListener('message', chatSocketOnMessage);
 
 var localStream = new MediaStream();
 
@@ -114,9 +126,9 @@ function createOfferer(username, receiver_channel_name){
     dc.addEventListener('open', () =>{
         console.log('Connection Opened');
     });
-    dc.addEventListener('message', dcOnMessage);
 
-    var remoteVideo = createVideo(username)
+
+    var remoteVideo = createVideo(username);
     setOnTrack(peer, remoteVideo);
 
     mapPeers[username] = [peer, dc];
@@ -158,7 +170,7 @@ function createAnswerer(offer, username, receiver_channel_name){
 
     addLocalTracks(peer);
 
-    var remoteVideo = createVideo(username)
+    var remoteVideo = createVideo(username);
     setOnTrack(peer, remoteVideo);
 
     peer.addEventListener('datachannel', e =>{
@@ -166,8 +178,6 @@ function createAnswerer(offer, username, receiver_channel_name){
         dc.addEventListener('open', () =>{
             console.log('Connection Opened');
         });
-        dc.addEventListener('message', dcOnMessage);
-
         mapPeers[username] = [peer, peer.dc];
     });
 
@@ -218,9 +228,6 @@ function addLocalTracks(peer){
         peer.addTrack(track, localStream);
     })
     return; 
-}
-
-function dcOnMessage(event){
 }
 
 function createVideo(username){
