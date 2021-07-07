@@ -307,8 +307,11 @@ function getDataChannels(){
     var dataChannels = [];
 
     for(users in mapPeers){
-        var datachannel = mapPeers[users][1];
-        dataChannels.push(datachannel);
+            if(users == user_username){
+            var datachannel = mapPeers[users][1];
+
+            dataChannels.push(datachannel);
+        }
     }
 
     return dataChannels;
