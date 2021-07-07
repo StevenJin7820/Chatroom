@@ -163,7 +163,7 @@ function createOfferer(username, receiver_channel_name){
     });
 
     peer.createOffer()
-        .then(o => peer.localDescription())
+        .then(o => peer.setLocalDescription(o))
         .then(() => {
             console.log('Local Description Set Successfully');
         }) 
