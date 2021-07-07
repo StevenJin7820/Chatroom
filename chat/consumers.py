@@ -1,8 +1,6 @@
-from chat.views import room
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import *
-from .forms import CreateRoomForm
 
 
 class ChatRoomConsumer(AsyncWebsocketConsumer):
