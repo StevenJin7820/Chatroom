@@ -7,13 +7,17 @@ var mapPeers = {};
 var loc = window.location;
 var wsStart = 'ws://';
 
+var chatSocket;
+
 if(loc.protocol == 'https:' ){
     wsStart = 'wss://';
 }
 
-var endPoint = wsStart + loc.host + loc.pathname;
+var endPoint = wsStart + loc.host + '/home/chatrooms/' + roomName + '/'
 
-const chatSocket = new WebSocket(endPoint);
+console.log('endPoint: ', endPoint)
+
+chatSocket = new WebSocket(endPoint);
 
 function chatSocketOnMessage(event){
     var parsedData = JSON.parse(event.data);
@@ -52,8 +56,8 @@ chatSocket.addEventListener('open', (e)=> {
     sendSignal('new-peer', {});
 });
 
-chatSocket.addEventListener('error', (e)=>{
-    console.log('Error Occurred!');
+chatSocket.addEventListener('error', function(event){
+    console.log('Websocket Error: ', event);
 });
 
 chatSocket.addEventListener('close', (e) =>{
@@ -159,7 +163,7 @@ function createOfferer(username, receiver_channel_name){
     });
 
     peer.createOffer()
-        .then(o => peer.localDescription(o))
+        .then(o => peer.localDescription())
         .then(() => {
             console.log('Local Description Set Successfully');
         }) 
@@ -302,8 +306,8 @@ function sendMsgOnClick(){
 function getDataChannels(){
     var dataChannels = [];
 
-    for(user_username in mapPeers){
-        var datachannel = mapPeers[user_username][1];
+    for(users in mapPeers){
+        var datachannel = mapPeers[users][1];
         dataChannels.push(datachannel);
     }
 
