@@ -1,6 +1,8 @@
+from chat.views import room
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import *
+from .forms import CreateRoomForm
 
 
 class ChatRoomConsumer(AsyncWebsocketConsumer):
@@ -15,6 +17,7 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
         await self.accept()
 
     async def disconnect(self, close_code):
+
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -22,35 +25,26 @@ class ChatRoomConsumer(AsyncWebsocketConsumer):
 
 
     async def receive(self, text_data):
-        recieve_dict = json.loads(text_data)
-        recieve_dict['message']['receiver_channel_name'] = self.channel_name
-        action = recieve_dict['action']
-
-        if(action == 'new-offer') or (action == 'new-answer'):
-            receiver_channel_name = recieve_dict['message']['receiver_channel_name']
-            recieve_dict['message']['receiver_channel_name'] = self.channel_name
-
-            await self.channel_layer.send(
-                receiver_channel_name,
-                {
-                    'type': 'send_sdp',
-                    'receive_dict' : recieve_dict,
-                }
-            )
-
-            return
+        text_data_json = json.loads(text_data)
+        message = text_data_json['message']
+        username = text_data_json['username']
 
         await self.channel_layer.group_send(
             self.room_group_name,
             {
-                'type': 'send_sdp',
-                'receive_dict' : recieve_dict,
+                'type': 'chatroom_message',
+                'message': message,
+                'username': username,
             }
         )
 
-    async def send_sdp(self, event):
-        receive_dict = event['receive_dict']
+    async def chatroom_message(self, event):
+        message = event['message']
+        username = event['username']
 
-        await self.send(text_data=json.dumps(receive_dict))
+        await self.send(text_data=json.dumps({
+            'message': message,
+            'username': username,
+        }))
 
     pass

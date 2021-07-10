@@ -31,19 +31,22 @@ function chatSocketOnMessage(event){
     var receiver_channel_name = parsedData['message']['receiver_channel_name'];
 
     if(action == 'new-peer'){
-        createOfferer(username, receiver_channel_name);
+        createOfferer(user_username, receiver_channel_name);
         return;
     }
 
     if(action == 'new-offer'){
         var offer = parsedData['message']['sdp'];
-        createAnswerer(offer, username, receiver_channel_name);
+
+        createAnswerer(offer, user_username, receiver_channel_name);
+
+        return;
     }
 
     if(action == 'new-answer'){
         var answer = parsedData['message']['sdp'];
 
-        var peer = mapPeers[username][0];
+        var peer = mapPeers[user_username][0];
 
         peer.setRemoteDescription(answer);
 
@@ -131,6 +134,8 @@ function createOfferer(username, receiver_channel_name){
         console.log('Connection Opened');
     });
 
+    dc.addEventListener('message', dcOnMessage);
+
 
     var remoteVideo = createVideo(username);
     setOnTrack(peer, remoteVideo);
@@ -140,7 +145,7 @@ function createOfferer(username, receiver_channel_name){
     peer.addEventListener('iceconnectionstatechange', () =>{
         var iceConnectionState = peer.iceConnectionState;
 
-        if(iceConnectionState === 'failed' || iceConnectionState === 'disconnected' || iceConnectionState === 'closed'){
+        if(iceConnectionState == 'failed' || iceConnectionState == 'disconnected' || iceConnectionState == 'closed'){
             delete mapPeers[username];
             if(iceConnectionState != 'closed'){
                 peer.close();
@@ -152,21 +157,20 @@ function createOfferer(username, receiver_channel_name){
 
     peer.addEventListener('icecandidate', (event) =>{
         if(event.candidate){
-            console.log('New ice candidate', JSON.stringify(peer.localDescription));
+            console.log('New ice candidate');
             return;
         }
-
         sendSignal('new-offer', {
             'sdp' : peer.localDescription,
             'reciever_channel_name' : receiver_channel_name
-        })
+        });
     });
 
     peer.createOffer()
         .then(o => peer.setLocalDescription(o))
         .then(() => {
             console.log('Local Description Set Successfully');
-        }) 
+        }); 
 }
 
 function createAnswerer(offer, username, receiver_channel_name){
@@ -179,9 +183,11 @@ function createAnswerer(offer, username, receiver_channel_name){
 
     peer.addEventListener('datachannel', e =>{
         peer.dc = e.channel;
-        dc.addEventListener('open', () =>{
+        peer.dc.addEventListener('open', () =>{
             console.log('Connection Opened');
         });
+        peer.dc.addEventListener('message', dcOnMessage);
+
         mapPeers[username] = [peer, peer.dc];
     });
 
@@ -200,7 +206,7 @@ function createAnswerer(offer, username, receiver_channel_name){
 
     peer.addEventListener('icecandidate', (event) =>{
         if(event.candidate){
-            console.log('New ice candidate', JSON.stringify(peer.localDescription));
+            console.log('New ice candidate: Answer');
             return;
         }
 
@@ -230,7 +236,7 @@ function createAnswerer(offer, username, receiver_channel_name){
 function addLocalTracks(peer){
     localStream.getTracks().forEach(track =>{
         peer.addTrack(track, localStream);
-    })
+    });
     return; 
 }
 
@@ -272,8 +278,8 @@ function sendSignal(action, message){
     var jsonStr = JSON.stringify({
         'username' : user_username,
         'action' : action,
-        'message' : message
-    })
+        'message' : message,
+    });
 
     chatSocket.send(jsonStr);
 }
@@ -284,6 +290,10 @@ var messageInput = document.querySelector('#input');
 
 btnSendMsg.addEventListener('click', sendMsgOnClick);
 
+function dcOnMessage(event){
+    var message = event.data;
+    chatBox.value += (user_username+ ': ' + message + '\n');
+}
 
 function sendMsgOnClick(){
     var message = messageInput.value;
@@ -307,12 +317,10 @@ function getDataChannels(){
     var dataChannels = [];
 
     for(users in mapPeers){
-            if(users == user_username){
             var datachannel = mapPeers[users][1];
-
             dataChannels.push(datachannel);
         }
-    }
-
     return dataChannels;
 }
+
+
